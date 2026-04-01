@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/api': 'https://gymflow-backend-3kyi.onrender.com'
+      '/api': 'http://localhost:8080'
     }
   }
 });

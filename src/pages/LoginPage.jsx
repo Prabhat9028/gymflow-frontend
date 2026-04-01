@@ -40,6 +40,8 @@ export default function LoginPage() {
           <p className="text-surface-400 text-lg max-w-md mx-auto leading-relaxed">
             Complete gym management with biometric attendance, membership tracking, and real-time analytics.
           </p>
+          <br></br><br></br>
+          <h4 className="font-display text-4xl font-bold text-white mb-4 tracking-tight">Powered By : Maxout Gym</h4>
         </div>
       </div>
 
