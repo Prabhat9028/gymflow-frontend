@@ -1,93 +1,46 @@
 import axios from 'axios';
+const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' });
+api.interceptors.request.use(c => { const t = localStorage.getItem('gf_token'); if (t) c.headers.Authorization = `Bearer ${t}`; return c; });
+api.interceptors.response.use(r => r, e => { if (e.response?.status === 401) { localStorage.clear(); window.location.href = '/login'; } return Promise.reject(e); });
+const bp = () => localStorage.getItem('gf_branch');
+const cp = () => localStorage.getItem('gf_company');
 
-const API_URL = import.meta.env.VITE_API_URL || '/api';
-
-const api = axios.create({ baseURL: API_URL });
-
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('gymflow_token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
-
-api.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    if (err.response?.status === 401) {
-      localStorage.removeItem('gymflow_token');
-      window.location.href = '/login';
-    }
-    return Promise.reject(err);
-  }
-);
-
-// Auth
-export const authApi = {
-  login: (data) => api.post('/auth/login', data),
-  register: (data, role) => api.post(`/auth/register?role=${role}`, data),
-};
-
-// Dashboard
-export const dashboardApi = {
-  getStats: () => api.get('/dashboard'),
-};
-
-// Members
+export const authApi = { login: d => api.post('/auth/login', d), switchBranch: bid => api.post('/auth/switch-branch', { branchId: bid }) };
+export const dashboardApi = { getStats: () => api.get('/dashboard', { params: { branchId: bp() }}) };
 export const memberApi = {
-  getAll: (page = 0, size = 20, search = '') =>
-    api.get('/members', { params: { page, size, search: search || undefined } }),
-  getById: (id) => api.get(`/members/${id}`),
-  getByCode: (code) => api.get(`/members/code/${code}`),
-  create: (data) => api.post('/members', data),
-  update: (id, data) => api.put(`/members/${id}`, data),
-  deactivate: (id) => api.delete(`/members/${id}`),
+  getAll: (p=0,s=20,q='') => api.get('/members', { params: { branchId: bp(), page: p, size: s, search: q||undefined }}),
+  getById: id => api.get(`/members/${id}`), create: d => api.post('/members', d, { params: { branchId: bp() }}),
+  update: (id,d) => api.put(`/members/${id}`, d), deactivate: id => api.delete(`/members/${id}`),
+  enrollBiometric: (id, serial) => api.post(`/members/${id}/enroll-biometric`, null, { params: { deviceSerial: serial }})
 };
-
-// Plans
-export const planApi = {
-  getAll: () => api.get('/plans'),
-  create: (data) => api.post('/plans', data),
-  update: (id, data) => api.put(`/plans/${id}`, data),
-  delete: (id) => api.delete(`/plans/${id}`),
+export const planApi = { getAll: () => api.get('/plans', { params: { branchId: bp() }}), create: d => api.post('/plans', d, { params: { branchId: bp(), companyId: cp() }}) };
+export const subscriptionApi = { create: d => api.post('/subscriptions', d), getByMember: mid => api.get(`/subscriptions/member/${mid}`), getExpiring: (days=7) => api.get('/subscriptions/expiring', { params: { branchId: bp(), days }}) };
+export const paymentApi = { getAll: (p=0,s=20) => api.get('/payments', { params: { branchId: bp(), page: p, size: s }}) };
+export const trainerApi = { getAll: () => api.get('/trainers', { params: { branchId: bp() }}), create: d => api.post('/trainers', d, { params: { branchId: bp(), companyId: cp() }}), delete: id => api.delete(`/trainers/${id}`) };
+export const attendanceApi = { checkIn: d => api.post('/attendance/checkin', d, { params: { branchId: bp() }}), checkOut: mid => api.post(`/attendance/checkout/${mid}`), getToday: () => api.get('/attendance/today', { params: { branchId: bp() }}), getAll: (p=0,s=20) => api.get('/attendance', { params: { branchId: bp(), page: p, size: s }}) };
+export const staffApi = {
+  getAll: (p=0,s=20,q='') => api.get('/staff', { params: { branchId: bp(), page: p, size: s, search: q||undefined }}),
+  create: d => api.post('/staff', d, { params: { branchId: bp(), companyId: cp() }}), deactivate: id => api.delete(`/staff/${id}`),
+  checkIn: d => api.post('/staff/attendance/checkin', d, { params: { branchId: bp() }}), checkOut: sid => api.post(`/staff/attendance/checkout/${sid}`),
+  getTodayAttendance: () => api.get('/staff/attendance/today', { params: { branchId: bp() }})
 };
-
-// Subscriptions
-export const subscriptionApi = {
-  create: (data) => api.post('/subscriptions', data),
-  getByMember: (memberId) => api.get(`/subscriptions/member/${memberId}`),
-  getExpiring: (days = 7) => api.get('/subscriptions/expiring', { params: { days } }),
+export const biometricApi = { getDevices: () => api.get('/biometric/devices', { params: { branchId: bp() }}), pullAttendance: serial => api.post('/biometric/pull-attendance', null, { params: { deviceSerial: serial }}) };
+export const reportApi = {
+  getMembershipReport: (params={}) => api.get('/reports/membership', { params: { branchId: bp(), ...params }}),
+  getPendingPayments: (params={}) => api.get('/reports/pending-payments', { params: { branchId: bp(), ...params }}),
+  exportMembership: (params={}) => api.get('/reports/membership/export', { params: { branchId: bp(), ...params }, responseType: 'blob' }),
+  exportPendingPayments: (params={}) => api.get('/reports/pending-payments/export', { params: { branchId: bp(), ...params }, responseType: 'blob' }),
+  exportPlanDistribution: (params={}) => api.get('/reports/plan-distribution/export', { params: { branchId: bp(), ...params }, responseType: 'blob' }),
 };
-
-// Payments
-export const paymentApi = {
-  getAll: (page = 0, size = 20) => api.get('/payments', { params: { page, size } }),
+export const gymApi = {
+  getAll: () => api.get('/gyms'),
+  getById: id => api.get(`/gyms/${id}`),
+  create: d => api.post('/gyms', d),
+  update: (id, d) => api.put(`/gyms/${id}`, d),
+  deactivate: id => api.delete(`/gyms/${id}`),
+  getBranches: companyId => api.get(`/gyms/${companyId}/branches`),
+  createBranch: (companyId, d) => api.post(`/gyms/${companyId}/branches`, d),
+  updateBranch: (branchId, d) => api.put(`/gyms/branches/${branchId}`, d),
+  deactivateBranch: branchId => api.delete(`/gyms/branches/${branchId}`),
 };
-
-// Trainers
-export const trainerApi = {
-  getAll: () => api.get('/trainers'),
-  getById: (id) => api.get(`/trainers/${id}`),
-  create: (data) => api.post('/trainers', data),
-  update: (id, data) => api.put(`/trainers/${id}`, data),
-  delete: (id) => api.delete(`/trainers/${id}`),
-};
-
-// Attendance
-export const attendanceApi = {
-  checkIn: (data) => api.post('/attendance/checkin', data),
-  checkOut: (memberId) => api.post(`/attendance/checkout/${memberId}`),
-  getAll: (page = 0, size = 20) => api.get('/attendance', { params: { page, size } }),
-  getToday: () => api.get('/attendance/today'),
-  getByMember: (memberId, page = 0, size = 20) =>
-    api.get(`/attendance/member/${memberId}`, { params: { page, size } }),
-};
-
-// Biometric
-export const biometricApi = {
-  enroll: (data) => api.post('/biometric/enroll', data),
-  verify: (data) => api.post('/biometric/verify', data),
-  getByMember: (memberId) => api.get(`/biometric/member/${memberId}`),
-  delete: (id) => api.delete(`/biometric/${id}`),
-};
-
 export default api;
