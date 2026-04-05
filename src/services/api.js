@@ -48,6 +48,7 @@ export const gymApi = {
   deactivateBranch: branchId => api.delete(`/gyms/branches/${branchId}`),
 };
 export const uploadApi = {
-  upload: (file, type='general') => { const fd = new FormData(); fd.append('file', file); fd.append('type', type); return api.post('/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' }}); }
+  upload: (file, type='general') => { const fd = new FormData(); fd.append('file', file); fd.append('type', type); return api.post('/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' }}); },
+  importMembers: (file, branchId) => { const fd = new FormData(); fd.append('file', file); return api.post('/import/members', fd, { params: { branchId }, headers: { 'Content-Type': 'multipart/form-data' }}); },
 };
 export default api;

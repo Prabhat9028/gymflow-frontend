@@ -1,7 +1,7 @@
 import React,{useState,useEffect,useCallback} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {memberApi,biometricApi,planApi} from '../services/api';
-import {Plus,Search,ChevronLeft,ChevronRight,Fingerprint} from 'lucide-react';
+import {memberApi,biometricApi,planApi,uploadApi} from '../services/api';
+import {Plus,Search,ChevronLeft,ChevronRight,Fingerprint,Upload} from 'lucide-react';
 import Modal from '../components/common/Modal';
 import toast from 'react-hot-toast';
 
@@ -51,7 +51,12 @@ export default function MembersPage(){
   return(<div className="space-y-6 animate-in">
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div><h1 className="font-display text-2xl font-bold">Members</h1><p className="text-surface-500 text-sm">{total} total members (branch-specific)</p></div>
-      <button className="btn-primary" onClick={openNew}><Plus className="w-4 h-4"/>Add Member</button>
+      <div className="flex gap-2">
+        <label className="btn-secondary cursor-pointer"><Upload className="w-4 h-4"/>Import Excel
+          <input type="file" accept=".xlsx,.xls" className="hidden" onChange={async e=>{if(e.target.files[0]){toast.loading('Importing...',{id:'imp'});try{const{data}=await uploadApi.importMembers(e.target.files[0],localStorage.getItem('gf_branch'));toast.success(`Imported ${data.imported} members, ${data.skipped} skipped`,{id:'imp'});load();}catch(err){toast.error(err.response?.data?.error||'Import failed',{id:'imp'});}}}}/>
+        </label>
+        <button className="btn-primary" onClick={openNew}><Plus className="w-4 h-4"/>Add Member</button>
+      </div>
     </div>
     <div className="relative max-w-md"><Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400"/><input className="input-field pl-10" placeholder="Search..." value={search} onChange={e=>{setSearch(e.target.value);setPage(0);}}/></div>
     <div className="card overflow-hidden"><div className="overflow-x-auto"><table className="w-full"><thead><tr className="bg-surface-50 border-b">
