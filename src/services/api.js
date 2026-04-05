@@ -9,13 +9,20 @@ export const authApi = { login: d => api.post('/auth/login', d), switchBranch: b
 export const dashboardApi = { getStats: () => api.get('/dashboard', { params: { branchId: bp() }}) };
 export const memberApi = {
   getAll: (p=0,s=20,q='') => api.get('/members', { params: { branchId: bp(), page: p, size: s, search: q||undefined }}),
+  searchGlobal: (q,p=0,s=20) => api.get('/members/search-global', { params: { branchId: bp(), q, page: p, size: s }}),
   getById: id => api.get(`/members/${id}`), create: d => api.post('/members', d, { params: { branchId: bp() }}),
   update: (id,d) => api.put(`/members/${id}`, d), deactivate: id => api.delete(`/members/${id}`),
   enrollBiometric: (id, serial) => api.post(`/members/${id}/enroll-biometric`, null, { params: { deviceSerial: serial }})
 };
 export const planApi = { getAll: () => api.get('/plans', { params: { branchId: bp() }}), create: d => api.post('/plans', d, { params: { branchId: bp(), companyId: cp() }}) };
-export const subscriptionApi = { create: d => api.post('/subscriptions', d), getByMember: mid => api.get(`/subscriptions/member/${mid}`), getExpiring: (days=7) => api.get('/subscriptions/expiring', { params: { branchId: bp(), days }}) };
-export const paymentApi = { getAll: (p=0,s=20) => api.get('/payments', { params: { branchId: bp(), page: p, size: s }}) };
+export const subscriptionApi = {
+  create: d => api.post('/subscriptions', d), getByMember: mid => api.get(`/subscriptions/member/${mid}`),
+  getExpiring: (days=7) => api.get('/subscriptions/expiring', { params: { branchId: bp(), days }})
+};
+export const paymentApi = {
+  getAll: (p=0,s=20) => api.get('/payments', { params: { branchId: bp(), page: p, size: s }}),
+  collectBalance: d => api.post('/payments/collect-balance', d),
+};
 export const trainerApi = { getAll: () => api.get('/trainers', { params: { branchId: bp() }}), create: d => api.post('/trainers', d, { params: { branchId: bp(), companyId: cp() }}), delete: id => api.delete(`/trainers/${id}`) };
 export const attendanceApi = { checkIn: d => api.post('/attendance/checkin', d, { params: { branchId: bp() }}), checkOut: mid => api.post(`/attendance/checkout/${mid}`), getToday: () => api.get('/attendance/today', { params: { branchId: bp() }}), getAll: (p=0,s=20) => api.get('/attendance', { params: { branchId: bp(), page: p, size: s }}) };
 export const staffApi = {
@@ -33,14 +40,14 @@ export const reportApi = {
   exportPlanDistribution: (params={}) => api.get('/reports/plan-distribution/export', { params: { branchId: bp(), ...params }, responseType: 'blob' }),
 };
 export const gymApi = {
-  getAll: () => api.get('/gyms'),
-  getById: id => api.get(`/gyms/${id}`),
-  create: d => api.post('/gyms', d),
-  update: (id, d) => api.put(`/gyms/${id}`, d),
-  deactivate: id => api.delete(`/gyms/${id}`),
+  getAll: () => api.get('/gyms'), getById: id => api.get(`/gyms/${id}`),
+  create: d => api.post('/gyms', d), update: (id, d) => api.put(`/gyms/${id}`, d), deactivate: id => api.delete(`/gyms/${id}`),
   getBranches: companyId => api.get(`/gyms/${companyId}/branches`),
   createBranch: (companyId, d) => api.post(`/gyms/${companyId}/branches`, d),
   updateBranch: (branchId, d) => api.put(`/gyms/branches/${branchId}`, d),
   deactivateBranch: branchId => api.delete(`/gyms/branches/${branchId}`),
+};
+export const uploadApi = {
+  upload: (file, type='general') => { const fd = new FormData(); fd.append('file', file); fd.append('type', type); return api.post('/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' }}); }
 };
 export default api;

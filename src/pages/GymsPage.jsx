@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { gymApi } from '../services/api';
+import { gymApi, uploadApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { Plus, Building2, MapPin, Phone, Mail, Edit2, Trash2, ChevronDown, ChevronRight, Users, GitBranch } from 'lucide-react';
+import { Plus, Building2, MapPin, Phone, Mail, Edit2, Trash2, ChevronDown, ChevronRight, Users, GitBranch, Camera } from 'lucide-react';
 import Modal from '../components/common/Modal';
 import toast from 'react-hot-toast';
 
@@ -156,8 +156,14 @@ export default function GymsPage() {
               <input className="input-field" value={gymForm.phone} onChange={e => setG('phone', e.target.value)} placeholder="+91 9876543210" /></div>
             <div className="sm:col-span-2"><label className="block text-sm font-medium text-surface-700 mb-1">Address</label>
               <input className="input-field" value={gymForm.address} onChange={e => setG('address', e.target.value)} placeholder="Full address" /></div>
-            <div className="sm:col-span-2"><label className="block text-sm font-medium text-surface-700 mb-1">Logo URL</label>
-              <input className="input-field" value={gymForm.logoUrl} onChange={e => setG('logoUrl', e.target.value)} placeholder="https://example.com/logo.png" /></div>
+            <div className="sm:col-span-2"><label className="block text-sm font-medium text-surface-700 mb-1">Logo</label>
+              <div className="flex items-center gap-4">
+                {gymForm.logoUrl ? <img src={gymForm.logoUrl} alt="" className="w-16 h-16 rounded-xl object-cover border"/>
+                : <div className="w-16 h-16 rounded-xl bg-surface-100 flex items-center justify-center text-surface-400 border"><Camera className="w-6 h-6"/></div>}
+                <div><label className="btn-secondary cursor-pointer !text-xs"><Camera className="w-3.5 h-3.5"/>Upload Logo
+                  <input type="file" accept="image/*" className="hidden" onChange={async e=>{if(e.target.files[0]){try{const{data}=await uploadApi.upload(e.target.files[0],'gym');setG('logoUrl',data.url);toast.success('Logo uploaded');}catch{toast.error('Upload failed');}}}}/>
+                </label><p className="text-xs text-surface-400 mt-1">JPG, PNG, max 10MB</p></div>
+              </div></div>
           </div>
           {!gymModal?.id && (
             <div className="border-t pt-4 mt-4">
