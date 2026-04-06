@@ -60,4 +60,16 @@ export const uploadApi = {
 export const churnApi = {
   getPredictions: () => api.get('/ai/churn', { params: { branchId: bp() }}),
 };
+export const leadApi = {
+  getAll: (p=0,s=20,q='') => api.get('/leads', { params: { branchId: bp(), page: p, size: s, search: q||undefined }}),
+  getById: id => api.get(`/leads/${id}`),
+  create: d => api.post('/leads', d, { params: { branchId: bp() }}),
+  update: (id, d) => api.put(`/leads/${id}`, d),
+  updateStatus: (id, d) => api.put(`/leads/${id}/status`, d),
+  convert: id => api.post(`/leads/${id}/convert`),
+  getActivities: id => api.get(`/leads/${id}/activities`),
+  addActivity: (id, d) => api.post(`/leads/${id}/activities`, d),
+  byStatus: status => api.get('/leads/by-status', { params: { branchId: bp(), status }}),
+  getDashboard: () => api.get('/leads/dashboard', { params: { branchId: bp() }}),
+};
 export default api;
