@@ -15,6 +15,7 @@ import PaymentsPage from './pages/PaymentsPage';
 import ReportsPage from './pages/ReportsPage';
 import BiometricPage from './pages/BiometricPage';
 import GymsPage from './pages/GymsPage';
+import ChurnPage from './pages/ChurnPage';
 
 function ProtectedRoute({children}){const{isAuthenticated,loading}=useAuth();if(loading)return<div className="flex items-center justify-center h-screen"><div className="animate-spin w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full"/></div>;return isAuthenticated?children:<Navigate to="/login"/>;}
 function AppRoutes(){const{isAuthenticated}=useAuth();return(<Routes>
@@ -25,6 +26,6 @@ function AppRoutes(){const{isAuthenticated}=useAuth();return(<Routes>
     <Route path="attendance" element={<AttendancePage/>}/><Route path="biometric" element={<BiometricPage/>}/>
     <Route path="plans" element={<PlansPage/>}/><Route path="trainers" element={<TrainersPage/>}/>
     <Route path="staff" element={<StaffPage/>}/><Route path="payments" element={<PaymentsPage/>}/>
-    <Route path="reports" element={<ReportsPage/>}/><Route path="gyms" element={<GymsPage/>}/>
+    <Route path="reports" element={<ReportsPage/>}/><Route path="ai-churn" element={<ChurnPage/>}/><Route path="gyms" element={<GymsPage/>}/>
   </Route></Routes>);}
 export default function App(){return(<BrowserRouter><AuthProvider><AppRoutes/><Toaster position="top-right" toastOptions={{style:{borderRadius:'12px',background:'#1e293b',color:'#f8fafc',fontSize:'14px'}}}/></AuthProvider></BrowserRouter>);}

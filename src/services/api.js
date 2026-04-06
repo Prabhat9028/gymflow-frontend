@@ -57,4 +57,7 @@ export const uploadApi = {
   upload: (file, type='general') => { const fd = new FormData(); fd.append('file', file); fd.append('type', type); return api.post('/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' }}); },
   importMembers: (file, branchId) => { const fd = new FormData(); fd.append('file', file); return api.post('/import/members', fd, { params: { branchId }, headers: { 'Content-Type': 'multipart/form-data' }}); },
 };
+export const churnApi = {
+  getPredictions: () => api.get('/ai/churn', { params: { branchId: bp() }}),
+};
 export default api;

@@ -3,7 +3,7 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { MaxOutLogoFull } from '../common/MaxOutLogo';
 import { memberApi } from '../../services/api';
-import { LayoutDashboard,Users,CalendarCheck,CreditCard,Dumbbell,Fingerprint,ClipboardList,LogOut,Menu,ChevronRight,UserCog,BarChart3,Building2,ChevronDown,Zap,Store,Search,X } from 'lucide-react';
+import { LayoutDashboard,Users,CalendarCheck,CreditCard,Dumbbell,Fingerprint,ClipboardList,LogOut,Menu,ChevronRight,UserCog,BarChart3,Building2,ChevronDown,Zap,Store,Search,X,Brain } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const navItems = [
@@ -11,6 +11,7 @@ const navItems = [
   { to:'/attendance',icon:CalendarCheck,label:'Attendance' },{ to:'/biometric',icon:Fingerprint,label:'Biometric' },
   { to:'/plans',icon:ClipboardList,label:'Plans' },{ to:'/trainers',icon:Dumbbell,label:'Trainers' },
   { to:'/staff',icon:UserCog,label:'Staff' },{ to:'/payments',icon:CreditCard,label:'Payments' },{ to:'/reports',icon:BarChart3,label:'Reports' },
+  { to:'/ai-churn',icon:Brain,label:'AI Churn Predictor' },
   { to:'/gyms',icon:Store,label:'Gyms & Branches',superAdminOnly:true },
 ];
 
