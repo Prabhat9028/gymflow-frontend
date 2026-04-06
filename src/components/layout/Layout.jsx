@@ -119,7 +119,7 @@ export default function Layout() {
                   className="w-full flex items-center gap-3 px-4 py-3 hover:bg-surface-50 transition-colors text-left border-b last:border-0">
                   <div className="w-9 h-9 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-xs font-bold flex-shrink-0">{m.firstName?.[0]}{m.lastName?.[0]}</div>
                   <div className="flex-1 min-w-0"><p className="text-sm font-medium truncate">{m.firstName} {m.lastName}</p><p className="text-xs text-surface-400">{m.memberCode} • {m.phone||'No phone'}</p></div>
-                  <span className={m.activeSubscription?'badge badge-green':'badge badge-gray'}>{m.activeSubscription?'Active':'Inactive'}</span>
+                  <span className={m.activeMembership?'badge badge-green':'badge badge-gray'}>{m.activeMembership?'Active':'Inactive'}</span>
                 </button>
               ))}
               {!searching && searchQ.length >= 2 && searchResults.length === 0 && <p className="px-4 py-3 text-sm text-surface-400 text-center">No members found</p>}

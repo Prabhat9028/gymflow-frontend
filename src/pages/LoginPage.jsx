@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { Mail, Lock, ArrowRight, Zap } from 'lucide-react';
 import toast from 'react-hot-toast';
 export default function LoginPage() {
-  const [email,setEmail]=useState('');const [password,setPassword]=useState('');const [loading,setLoading]=useState(false);
+  const [email,setEmail]=useState('admin@maxoutgym.com');const [password,setPassword]=useState('admin123');const [loading,setLoading]=useState(false);
   const {login}=useAuth();const nav=useNavigate();
   const submit=async e=>{e.preventDefault();setLoading(true);try{await login(email,password);toast.success('Welcome!');nav('/');}catch(err){toast.error(err.response?.data?.error||'Login failed');}finally{setLoading(false);}};
   return(<div className="min-h-screen flex">
@@ -26,11 +26,11 @@ export default function LoginPage() {
           <div><label className="block text-sm font-medium text-surface-700 mb-1.5">Password</label><div className="relative"><Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400"/><input type="password" value={password} onChange={e=>setPassword(e.target.value)} className="input-field pl-10" required/></div></div>
           <button type="submit" disabled={loading} className="btn-primary w-full py-3 text-base">{loading?<div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"/>:<>Sign In<ArrowRight className="w-4 h-4"/></>}</button>
         </form>
-        {/* <div className="mt-8 p-4 rounded-xl bg-surface-50 border">
+        <div className="mt-8 p-4 rounded-xl bg-surface-50 border">
           <p className="text-xs text-surface-500 font-medium mb-2">Demo Credentials</p>
           <p className="text-xs text-surface-600"><b>Super Admin:</b> admin@maxoutgym.com / admin123</p>
           <p className="text-xs text-surface-600"><b>Staff (Andheri):</b> rahul@maxoutgym.com / admin123</p>
-        </div> */}
+        </div>
       </div>
     </div>
   </div>);

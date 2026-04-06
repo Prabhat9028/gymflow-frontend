@@ -84,10 +84,10 @@ export default function ReportsPage() {
   ];
 
   const statusPie = m ? [
-    { name: 'Active', value: m.activeSubscriptions },
-    { name: 'Expired', value: m.expiredSubscriptions },
-    { name: 'Frozen', value: m.frozenSubscriptions },
-    { name: 'Cancelled', value: m.cancelledSubscriptions },
+    { name: 'Active', value: m.activeMemberships },
+    { name: 'Expired', value: m.expiredMemberships },
+    { name: 'Frozen', value: m.frozenMemberships },
+    { name: 'Cancelled', value: m.cancelledMemberships },
   ].filter(d => d.value > 0) : [];
 
   const memberPie = m ? [
@@ -139,10 +139,10 @@ export default function ReportsPage() {
       {tab === 'membership' && m && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Stat icon={Users} label="Active Subscriptions" value={f(m.activeSubscriptions)} color="brand" />
-            <Stat icon={AlertTriangle} label="Expired" value={f(m.expiredSubscriptions)} color="red" />
-            <Stat icon={Clock} label="Frozen" value={f(m.frozenSubscriptions)} color="amber" />
-            <Stat icon={Users} label="Cancelled" value={f(m.cancelledSubscriptions)} color="purple" />
+            <Stat icon={Users} label="Active Memberships" value={f(m.activeMemberships)} color="brand" />
+            <Stat icon={AlertTriangle} label="Expired" value={f(m.expiredMemberships)} color="red" />
+            <Stat icon={Clock} label="Frozen" value={f(m.frozenMemberships)} color="amber" />
+            <Stat icon={Users} label="Cancelled" value={f(m.cancelledMemberships)} color="purple" />
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="card p-6">
@@ -247,14 +247,17 @@ export default function ReportsPage() {
       {tab === 'expiry' && m && (
         <div className="card overflow-hidden">
           <div className="px-6 py-4 border-b flex items-center justify-between">
-            <h3 className="font-display font-semibold">Upcoming Expiry (Next 30 days)</h3>
+            <h3 className="font-display font-semibold">Upcoming Membership Expiry (30 days)</h3>
             <span className="badge badge-amber">{(m.upcomingExpiry || []).length} members</span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead><tr className="bg-surface-50 border-b">
                 <th className="text-left text-xs font-medium text-surface-500 uppercase px-6 py-3">Member</th>
+                <th className="text-left text-xs font-medium text-surface-500 uppercase px-6 py-3">Phone</th>
                 <th className="text-left text-xs font-medium text-surface-500 uppercase px-6 py-3">Plan</th>
+                <th className="text-left text-xs font-medium text-surface-500 uppercase px-6 py-3">Plan Price</th>
+                <th className="text-left text-xs font-medium text-surface-500 uppercase px-6 py-3">Paid</th>
                 <th className="text-left text-xs font-medium text-surface-500 uppercase px-6 py-3">End Date</th>
                 <th className="text-left text-xs font-medium text-surface-500 uppercase px-6 py-3">Days Left</th>
               </tr></thead>
@@ -262,7 +265,10 @@ export default function ReportsPage() {
                 {(m.upcomingExpiry || []).map((e, i) => (
                   <tr key={i} className="hover:bg-surface-50">
                     <td className="px-6 py-3"><p className="text-sm font-medium">{e.memberName}</p><p className="text-xs text-surface-400 font-mono">{e.memberCode}</p></td>
+                    <td className="px-6 py-3 text-sm">{e.memberPhone || '—'}</td>
                     <td className="px-6 py-3 text-sm">{e.planName}</td>
+                    <td className="px-6 py-3 text-sm">{e.planPrice ? `₹${f(e.planPrice)}` : '—'}</td>
+                    <td className="px-6 py-3 text-sm">{e.amountPaid ? `₹${f(e.amountPaid)}` : '—'}</td>
                     <td className="px-6 py-3 text-sm">{e.endDate}</td>
                     <td className="px-6 py-3"><span className={`badge ${e.daysUntilExpiry <= 7 ? 'badge-red' : 'badge-yellow'}`}>{e.daysUntilExpiry}d</span></td>
                   </tr>
@@ -270,7 +276,7 @@ export default function ReportsPage() {
               </tbody>
             </table>
           </div>
-          {(!m.upcomingExpiry || !m.upcomingExpiry.length) && <p className="px-6 py-8 text-center text-surface-400 text-sm">No upcoming expiries</p>}
+          {(!m.upcomingExpiry || !m.upcomingExpiry.length) && <p className="px-6 py-8 text-center text-surface-400 text-sm">No upcoming membership expiries</p>}
         </div>
       )}
 
@@ -289,6 +295,7 @@ export default function ReportsPage() {
               <table className="w-full">
                 <thead><tr className="bg-surface-50 border-b">
                   <th className="text-left text-xs font-medium text-surface-500 uppercase px-6 py-3">Member</th>
+                  <th className="text-left text-xs font-medium text-surface-500 uppercase px-6 py-3">Phone</th>
                   <th className="text-left text-xs font-medium text-surface-500 uppercase px-6 py-3">Plan</th>
                   <th className="text-left text-xs font-medium text-surface-500 uppercase px-6 py-3">Due</th>
                   <th className="text-left text-xs font-medium text-surface-500 uppercase px-6 py-3">Paid</th>
@@ -300,6 +307,7 @@ export default function ReportsPage() {
                   {(pending.entries || []).map((e, i) => (
                     <tr key={i} className="hover:bg-surface-50">
                       <td className="px-6 py-3"><p className="text-sm font-medium">{e.memberName}</p><p className="text-xs text-surface-400 font-mono">{e.memberCode}</p></td>
+                      <td className="px-6 py-3 text-sm">{e.memberPhone || '—'}</td>
                       <td className="px-6 py-3 text-sm">{e.planName}</td>
                       <td className="px-6 py-3 text-sm">₹{f(e.amountDue)}</td>
                       <td className="px-6 py-3 text-sm">₹{f(e.amountPaid)}</td>
