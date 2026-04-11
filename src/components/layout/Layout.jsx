@@ -3,20 +3,28 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { MaxOutLogoFull } from '../common/MaxOutLogo';
 import { memberApi } from '../../services/api';
-import { LayoutDashboard,Users,CalendarCheck,CreditCard,Dumbbell,Fingerprint,ClipboardList,LogOut,Menu,ChevronRight,UserCog,BarChart3,Building2,ChevronDown,Zap,Store,Search,X,Brain,Target } from 'lucide-react';
+import { LayoutDashboard,Users,CalendarCheck,CreditCard,Dumbbell,Fingerprint,ClipboardList,LogOut,Menu,ChevronRight,UserCog,BarChart3,Building2,ChevronDown,Store,Search,X,Brain,Target } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+const GFLogo = ({size=28}) => (<svg width={size} height={size} viewBox="0 0 120 120" fill="none"><rect x="4" y="4" width="112" height="112" rx="28" fill="url(#gfl)"/><path d="M72 28L48 62h18L54 92l30-38H64L72 28z" fill="#fff"/><defs><linearGradient id="gfl" x1="10" y1="10" x2="110" y2="110" gradientUnits="userSpaceOnUse"><stop stopColor="#FF8C42"/><stop offset="1" stopColor="#E8650A"/></linearGradient></defs></svg>);
+
 const navItems = [
-  { to:'/',icon:LayoutDashboard,label:'Dashboard',end:true },{ to:'/leads',icon:Target,label:'Leads' },{ to:'/members',icon:Users,label:'Members' },
-  { to:'/attendance',icon:CalendarCheck,label:'Attendance' },{ to:'/biometric',icon:Fingerprint,label:'Biometric' },
-  { to:'/plans',icon:ClipboardList,label:'Plans' },{ to:'/trainers',icon:Dumbbell,label:'Trainers' },
-  { to:'/staff',icon:UserCog,label:'Staff' },{ to:'/payments',icon:CreditCard,label:'Payments' },{ to:'/reports',icon:BarChart3,label:'Reports' },
-  { to:'/ai-churn',icon:Brain,label:'AI Churn Predictor' },
-  { to:'/gyms',icon:Store,label:'Gyms & Branches',superAdminOnly:true },
+  { to:'/',icon:LayoutDashboard,label:'Dashboard',end:true, access:['SUPER_ADMIN','ADMIN','STAFF','TRAINER'] },
+  { to:'/leads',icon:Target,label:'Leads', access:['SUPER_ADMIN','ADMIN','STAFF'] },
+  { to:'/members',icon:Users,label:'Members', access:['SUPER_ADMIN','ADMIN','STAFF'] },
+  { to:'/attendance',icon:CalendarCheck,label:'Attendance', access:['SUPER_ADMIN','ADMIN','STAFF'] },
+  { to:'/biometric',icon:Fingerprint,label:'Biometric', access:['SUPER_ADMIN','ADMIN'] },
+  { to:'/plans',icon:ClipboardList,label:'Plans', access:['SUPER_ADMIN','ADMIN'] },
+  { to:'/trainers',icon:Dumbbell,label:'Trainers', access:['SUPER_ADMIN','ADMIN'] },
+  { to:'/staff',icon:UserCog,label:'Staff', access:['SUPER_ADMIN','ADMIN'] },
+  { to:'/payments',icon:CreditCard,label:'Payments', access:['SUPER_ADMIN','ADMIN','STAFF'] },
+  { to:'/reports',icon:BarChart3,label:'Reports', access:['SUPER_ADMIN','ADMIN','STAFF'] },
+  { to:'/ai-churn',icon:Brain,label:'AI Churn Predictor', access:['SUPER_ADMIN','ADMIN','STAFF'] },
+  { to:'/gyms',icon:Store,label:'Gyms & Branches', access:['SUPER_ADMIN'] },
 ];
 
 export default function Layout() {
-  const { user, logout, switchBranch, isSuperAdmin } = useAuth();
+  const { user, logout, switchBranch, isSuperAdmin, isAdmin } = useAuth();
   const nav = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -57,15 +65,15 @@ export default function Layout() {
   const Sidebar = ({ mobile=false }) => (
     <aside className={`flex flex-col h-full bg-surface-950 text-white transition-all duration-300 ${mobile?'w-72':collapsed?'w-[72px]':'w-64'}`}>
       <div className="flex items-center gap-3 px-4 h-16 border-b border-surface-800/50">
-        {collapsed && !mobile ? <div className="mx-auto animate-float"><Zap className="w-7 h-7 text-brand-500"/></div>
-        : <div className="flex items-center gap-2"><Zap className="w-7 h-7 text-brand-500 animate-glow rounded-lg"/><span className="font-display font-bold text-lg">GymFlow</span></div>}
+        {collapsed && !mobile ? <div className="mx-auto"><GFLogo size={32}/></div>
+        : <div className="flex items-center gap-2.5"><GFLogo size={32}/><span className="font-display font-bold text-lg">GymFlow</span></div>}
       </div>
       {user?.companyName && (!collapsed||mobile) && (
         <div className="px-3 pt-2 pb-1"><div className="px-3 py-2 rounded-lg bg-surface-900/80 border border-surface-800">
           <MaxOutLogoFull /><p className="text-[10px] text-surface-500 mt-1 ml-12">{user.branchName}</p>
         </div></div>
       )}
-      {isSuperAdmin && (!collapsed||mobile) && (
+      {(isSuperAdmin || isAdmin) && (!collapsed||mobile) && (
         <div className="px-3 pb-1"><div className="relative">
           <button onClick={()=>setBranchOpen(!branchOpen)} className="w-full flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-800/60 hover:bg-surface-800 text-sm transition-colors">
             <Building2 className="w-4 h-4 text-brand-500 flex-shrink-0"/><span className="flex-1 text-left truncate text-surface-300">{user?.branchName||'Select'}</span>
@@ -77,9 +85,10 @@ export default function Layout() {
               {b.name} <span className="text-xs text-surface-500 ml-1">{b.city}</span></button>))}
           </div>}
         </div></div>
-      )}
+      )
+      }
       <nav className="flex-1 py-3 px-3 space-y-0.5 overflow-y-auto">
-        {navItems.filter(n=>!n.superAdminOnly||isSuperAdmin).map(({to,icon:Icon,label,end})=>(<NavLink key={to} to={to} end={end} onClick={()=>{mobile&&setMobileOpen(false);setBranchOpen(false);}}
+        {navItems.filter(n => n.access.includes(user?.role)).map(({to,icon:Icon,label,end})=>(<NavLink key={to} to={to} end={end} onClick={()=>{mobile&&setMobileOpen(false);setBranchOpen(false);}}
           className={({isActive})=>`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${isActive?'bg-brand-500 text-white shadow-lg shadow-brand-500/25':'text-surface-400 hover:text-white hover:bg-surface-800'} ${collapsed&&!mobile?'justify-center':''}`}>
           <Icon className="w-5 h-5 flex-shrink-0"/>{(!collapsed||mobile)&&<span>{label}</span>}</NavLink>))}
       </nav>

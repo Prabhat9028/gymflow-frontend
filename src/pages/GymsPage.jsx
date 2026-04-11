@@ -17,11 +17,11 @@ export default function GymsPage() {
   useEffect(() => { load(); }, []);
 
   // Gym form
-  const [gymForm, setGymForm] = useState({ name: '', code: '', email: '', phone: '', address: '', logoUrl: '', adminEmail: '', adminPassword: '' });
+  const [gymForm, setGymForm] = useState({ name: '', code: '', email: '', phone: '', address: '', logoUrl: '', theme: 'orange', adminEmail: '', adminPassword: '' });
   const setG = (k, v) => setGymForm(p => ({ ...p, [k]: v }));
 
-  const openNewGym = () => { setGymForm({ name: '', code: '', email: '', phone: '', address: '', logoUrl: '', adminEmail: '', adminPassword: '' }); setGymModal({}); };
-  const openEditGym = g => { setGymForm({ name: g.name, code: g.code, email: g.email || '', phone: g.phone || '', address: g.address || '', logoUrl: g.logoUrl || '', adminEmail: '', adminPassword: '' }); setGymModal(g); };
+  const openNewGym = () => { setGymForm({ name: '', code: '', email: '', phone: '', address: '', logoUrl: '', theme: 'orange', adminEmail: '', adminPassword: '' }); setGymModal({}); };
+  const openEditGym = g => { setGymForm({ name: g.name, code: g.code, email: g.email || '', phone: g.phone || '', address: g.address || '', logoUrl: g.logoUrl || '', theme: g.theme || 'orange', adminEmail: '', adminPassword: '' }); setGymModal(g); };
 
   const saveGym = async e => {
     e.preventDefault();
@@ -165,15 +165,29 @@ export default function GymsPage() {
                 </label><p className="text-xs text-surface-400 mt-1">JPG, PNG, max 10MB</p></div>
               </div></div>
           </div>
+          {/* Theme Selector */}
+          <div className="border-t pt-4 mt-4">
+            <h4 className="font-display font-semibold text-sm text-surface-900 mb-3">Brand Theme</h4>
+            <p className="text-xs text-surface-500 mb-3">Choose a theme for this gym — applied to all users on login</p>
+            <div className="flex gap-3 flex-wrap">
+              {[{id:'orange',label:'Orange',color:'#E8760A'},{id:'blue',label:'Blue',color:'#3b82f6'},{id:'green',label:'Green',color:'#22c55e'},{id:'purple',label:'Purple',color:'#a855f7'},{id:'red',label:'Red',color:'#ef4444'},{id:'teal',label:'Teal',color:'#14b8a6'}].map(t=>(
+                <button key={t.id} type="button" onClick={()=>setG('theme',t.id)}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 transition-all ${gymForm.theme===t.id?'border-surface-900 shadow-md scale-105':'border-surface-200 hover:border-surface-300'}`}>
+                  <div className="w-5 h-5 rounded-full shadow-inner" style={{background:t.color}}/>
+                  <span className="text-sm font-medium">{t.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
           {!gymModal?.id && (
             <div className="border-t pt-4 mt-4">
               <h4 className="font-display font-semibold text-sm text-surface-900 mb-3">Gym Admin Account</h4>
-              <p className="text-xs text-surface-500 mb-3">Create a Super Admin user who will manage this gym</p>
+              <p className="text-xs text-surface-500 mb-3">Create an Admin user for this gym. They'll be asked to change password on first login.</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium text-surface-700 mb-1">Admin Email</label>
-                  <input type="email" className="input-field" value={gymForm.adminEmail} onChange={e => setG('adminEmail', e.target.value)} placeholder="admin@gym.com" /></div>
-                <div><label className="block text-sm font-medium text-surface-700 mb-1">Admin Password</label>
-                  <input type="password" className="input-field" value={gymForm.adminPassword} onChange={e => setG('adminPassword', e.target.value)} placeholder="min 6 characters" /></div>
+                <div><label className="block text-sm font-medium text-surface-700 mb-1">Admin Email *</label>
+                  <input type="email" className="input-field" value={gymForm.adminEmail} onChange={e => setG('adminEmail', e.target.value)} placeholder="admin@gym.com" required/></div>
+                <div><label className="block text-sm font-medium text-surface-700 mb-1">Temporary Password *</label>
+                  <input type="password" className="input-field" value={gymForm.adminPassword} onChange={e => setG('adminPassword', e.target.value)} placeholder="min 6 characters" required/></div>
               </div>
             </div>
           )}

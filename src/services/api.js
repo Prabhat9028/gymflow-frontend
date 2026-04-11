@@ -5,7 +5,7 @@ api.interceptors.response.use(r => r, e => { if (e.response?.status === 401) { l
 const bp = () => localStorage.getItem('gf_branch');
 const cp = () => localStorage.getItem('gf_company');
 
-export const authApi = { login: d => api.post('/auth/login', d), switchBranch: bid => api.post('/auth/switch-branch', { branchId: bid }) };
+export const authApi = { login: d => api.post('/auth/login', d), switchBranch: bid => api.post('/auth/switch-branch', { branchId: bid }), changePassword: d => api.post('/auth/change-password', d) };
 export const dashboardApi = { getStats: () => api.get('/dashboard', { params: { branchId: bp() }}) };
 export const memberApi = {
   getAll: (p=0,s=20,q='') => api.get('/members', { params: { branchId: bp(), page: p, size: s, search: q||undefined }}),
