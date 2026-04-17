@@ -3,7 +3,7 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { MaxOutLogoFull } from '../common/MaxOutLogo';
 import { memberApi } from '../../services/api';
-import { LayoutDashboard,Users,CalendarCheck,CreditCard,Dumbbell,Fingerprint,ClipboardList,LogOut,Menu,ChevronRight,UserCog,BarChart3,Building2,ChevronDown,Store,Search,X,Brain,Target } from 'lucide-react';
+import { LayoutDashboard,Users,CalendarCheck,CreditCard,Dumbbell,Fingerprint,ClipboardList,LogOut,Menu,ChevronRight,UserCog,BarChart3,Building2,ChevronDown,Store,Search,X,Brain,Target,Tv } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const GFLogo = ({size=28}) => (<svg width={size} height={size} viewBox="0 0 120 120" fill="none"><rect x="4" y="4" width="112" height="112" rx="28" fill="url(#gfl)"/><path d="M72 28L48 62h18L54 92l30-38H64L72 28z" fill="#fff"/><defs><linearGradient id="gfl" x1="10" y1="10" x2="110" y2="110" gradientUnits="userSpaceOnUse"><stop stopColor="#FF8C42"/><stop offset="1" stopColor="#E8650A"/></linearGradient></defs></svg>);
@@ -18,8 +18,9 @@ const navItems = [
   { to:'/trainers',icon:Dumbbell,label:'Trainers', access:['SUPER_ADMIN','ADMIN'] },
   { to:'/staff',icon:UserCog,label:'Staff', access:['SUPER_ADMIN','ADMIN'] },
   { to:'/payments',icon:CreditCard,label:'Payments', access:['SUPER_ADMIN','ADMIN','STAFF'] },
-  { to:'/reports',icon:BarChart3,label:'Reports', access:['SUPER_ADMIN','ADMIN','STAFF'] },
-  { to:'/ai-churn',icon:Brain,label:'AI Churn Predictor', access:['SUPER_ADMIN','ADMIN','STAFF'] },
+  { to:'/reports',icon:BarChart3,label:'Reports', access:['SUPER_ADMIN','ADMIN'] },
+  { to:'/ai-churn',icon:Brain,label:'AI Churn Predictor', access:['SUPER_ADMIN','ADMIN'] },
+  { to:'/signage',icon:Tv,label:'Digital Signage', access:['SUPER_ADMIN','ADMIN'] },
   { to:'/gyms',icon:Store,label:'Gyms & Branches', access:['SUPER_ADMIN'] },
 ];
 

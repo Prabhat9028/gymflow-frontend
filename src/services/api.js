@@ -60,6 +60,23 @@ export const uploadApi = {
 export const churnApi = {
   getPredictions: () => api.get('/ai/churn', { params: { branchId: bp() }}),
 };
+export const signageApi = {
+  getDevices: () => api.get('/signage/devices', { params: { branchId: bp() }}),
+  createDevice: d => api.post('/signage/devices', d, { params: { branchId: bp(), companyId: cp() }}),
+  deleteDevice: id => api.delete(`/signage/devices/${id}`),
+  assignPlaylist: (id, playlistId) => api.post(`/signage/devices/${id}/assign-playlist`, null, { params: { playlistId }}),
+  getContent: () => api.get('/signage/content', { params: { branchId: bp() }}),
+  uploadContent: (file, name, contentType, durationSeconds) => {
+    const fd = new FormData(); fd.append('file', file); fd.append('name', name); fd.append('contentType', contentType);
+    if (durationSeconds) fd.append('durationSeconds', durationSeconds);
+    return api.post('/signage/content/upload', fd, { params: { branchId: bp(), companyId: cp() }, headers: { 'Content-Type': 'multipart/form-data' }});
+  },
+  deleteContent: id => api.delete(`/signage/content/${id}`),
+  getPlaylists: () => api.get('/signage/playlists', { params: { branchId: bp() }}),
+  createPlaylist: d => api.post('/signage/playlists', d, { params: { branchId: bp(), companyId: cp() }}),
+  updatePlaylist: (id, d) => api.put(`/signage/playlists/${id}`, d),
+  deletePlaylist: id => api.delete(`/signage/playlists/${id}`),
+};
 export const leadApi = {
   getAll: (p=0,s=20,q='') => api.get('/leads', { params: { branchId: bp(), page: p, size: s, search: q||undefined }}),
   getById: id => api.get(`/leads/${id}`),

@@ -18,6 +18,7 @@ import BiometricPage from './pages/BiometricPage';
 import GymsPage from './pages/GymsPage';
 import ChurnPage from './pages/ChurnPage';
 import LeadsPage from './pages/LeadsPage';
+import SignagePage from './pages/SignagePage';
 
 function ProtectedRoute({children}){
   const{isAuthenticated,loading,user}=useAuth();
@@ -36,7 +37,7 @@ function AppRoutes(){const{isAuthenticated}=useAuth();return(<Routes>
     <Route path="attendance" element={<AttendancePage/>}/><Route path="biometric" element={<BiometricPage/>}/>
     <Route path="plans" element={<PlansPage/>}/><Route path="trainers" element={<TrainersPage/>}/>
     <Route path="staff" element={<StaffPage/>}/><Route path="payments" element={<PaymentsPage/>}/>
-    <Route path="reports" element={<ReportsPage/>}/><Route path="leads" element={<LeadsPage/>}/><Route path="ai-churn" element={<ChurnPage/>}/><Route path="gyms" element={<GymsPage/>}/>
+    <Route path="reports" element={<ReportsPage/>}/><Route path="leads" element={<LeadsPage/>}/><Route path="ai-churn" element={<ChurnPage/>}/><Route path="signage" element={<SignagePage/>}/><Route path="gyms" element={<GymsPage/>}/>
   </Route></Routes>);}
 
 export default function App(){return(<BrowserRouter><AuthProvider><AppRoutes/><Toaster position="top-right" toastOptions={{style:{borderRadius:'12px',background:'#1e293b',color:'#f8fafc',fontSize:'14px'}}}/></AuthProvider></BrowserRouter>);}
