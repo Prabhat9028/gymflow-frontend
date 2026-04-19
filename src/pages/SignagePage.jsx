@@ -151,14 +151,19 @@ export default function SignagePage() {
       {!loading && tab === 'content' && (<>
         <div className="flex justify-end"><button className="btn-primary" onClick={() => { setUploadFile(null); setUploadName(''); setUploadType('VIDEO'); setUploadDuration(''); setContentModal(true); }}><Upload className="w-4 h-4" />Upload Content</button></div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 stagger-in">
-          {content.map(c => (
+          {content.map(c => {
+            const mediaUrl = c.fileUrl?.startsWith('http') ? c.fileUrl : `${window.location.protocol}//${window.location.host}${c.fileUrl}`;
+            return (
             <div key={c.id} className="card overflow-hidden card-hover group">
-              <div className="aspect-video bg-surface-100 flex items-center justify-center relative">
-                {c.contentType === 'VIDEO' ? <Film className="w-10 h-10 text-surface-300" /> : <img src={c.fileUrl} alt="" className="w-full h-full object-cover" />}
-                {c.durationSeconds && <span className="absolute bottom-2 right-2 badge badge-gray"><Clock className="w-3 h-3" />{c.durationSeconds}s</span>}
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                  <Play className="w-10 h-10 text-white" />
-                </div>
+              <div className="aspect-video bg-surface-900 flex items-center justify-center relative overflow-hidden">
+                {c.contentType === 'VIDEO' ? (
+                  <video src={mediaUrl} className="w-full h-full object-cover" muted preload="metadata" playsInline
+                    onMouseEnter={e => { try{e.target.play();}catch{} }} onMouseLeave={e => { try{e.target.pause();e.target.currentTime=0;}catch{} }} />
+                ) : (
+                  <img src={mediaUrl} alt={c.name} className="w-full h-full object-cover" />
+                )}
+                {c.durationSeconds && <span className="absolute bottom-2 right-2 badge badge-gray text-[10px]"><Clock className="w-3 h-3" />{c.durationSeconds}s</span>}
+                {c.contentType === 'VIDEO' && <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity pointer-events-none"><Play className="w-10 h-10 text-white drop-shadow-lg" /></div>}
               </div>
               <div className="p-4">
                 <p className="font-semibold text-sm truncate">{c.name}</p>
@@ -170,11 +175,12 @@ export default function SignagePage() {
                       className="p-1 rounded-lg hover:bg-red-50 text-red-400 hover:text-red-600 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
                   </div>
                 </div>
+                <p className="text-[10px] text-surface-400 mt-1 truncate font-mono">{c.fileName}</p>
               </div>
             </div>
-          ))}
+          );})}
         </div>
-        {!content.length && <div className="card p-12 text-center"><Film className="w-16 h-16 text-surface-300 mx-auto mb-4" /><p className="text-surface-400 text-lg">No content uploaded</p></div>}
+        {!content.length && <div className="card p-12 text-center"><Film className="w-16 h-16 text-surface-300 mx-auto mb-4" /><p className="text-surface-400 text-lg">No content uploaded</p><p className="text-surface-400 text-sm mt-2">Upload videos or images to get started</p></div>}
       </>)}
 
       {/* ===== PLAYLISTS TAB ===== */}
