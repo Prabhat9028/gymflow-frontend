@@ -164,7 +164,11 @@ export default function SignagePage() {
                 <p className="font-semibold text-sm truncate">{c.name}</p>
                 <div className="flex items-center justify-between mt-1.5">
                   <span className={`badge ${c.contentType === 'VIDEO' ? 'badge-purple' : 'badge-blue'}`}>{c.contentType}</span>
-                  <span className="text-xs text-surface-400">{fSize(c.fileSize)}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-surface-400">{fSize(c.fileSize)}</span>
+                    <button onClick={async () => { if (confirm(`Delete "${c.name}"?`)) { try { await signageApi.deleteContent(c.id); toast.success('Content deleted'); loadAll(); } catch { toast.error('Failed'); } } }}
+                      className="p-1 rounded-lg hover:bg-red-50 text-red-400 hover:text-red-600 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -178,10 +182,14 @@ export default function SignagePage() {
         <div className="flex justify-end"><button className="btn-primary" onClick={openNewPlaylist}><Plus className="w-4 h-4" />Create Playlist</button></div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 stagger-in">
           {playlists.map(p => (
-            <div key={p.id} className="card p-6 card-hover cursor-pointer" onClick={() => openEditPlaylist(p)}>
+            <div key={p.id} className="card p-6 card-hover">
               <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2"><List className="w-5 h-5 text-brand-500" /><h3 className="font-display font-bold">{p.name}</h3></div>
-                <span className="badge badge-blue">{(p.items || []).length} items</span>
+                <div className="flex items-center gap-2 cursor-pointer" onClick={() => openEditPlaylist(p)}><List className="w-5 h-5 text-brand-500" /><h3 className="font-display font-bold">{p.name}</h3></div>
+                <div className="flex items-center gap-2">
+                  <span className="badge badge-blue">{(p.items || []).length} items</span>
+                  <button onClick={async () => { if (confirm(`Delete playlist "${p.name}"?`)) { try { await signageApi.deletePlaylist(p.id); toast.success('Deleted'); loadAll(); } catch { toast.error('Failed'); } } }}
+                    className="p-1 rounded-lg hover:bg-red-50 text-red-400 hover:text-red-600"><Trash2 className="w-3.5 h-3.5" /></button>
+                </div>
               </div>
               {p.description && <p className="text-sm text-surface-500 mb-2">{p.description}</p>}
               <div className="flex items-center gap-3 text-xs text-surface-400">
